@@ -35,9 +35,20 @@ def load_conversation(file):
 
     return conversation
 
-def generate_text(conversation, prompt):
+def print_conversation(conversation):
+    for message in conversation["messages"]:
+        text = message["content"]
+        role = message["role"]
+        if role == "system":
+            print(f"[{text}]")
+        elif role == "user":
+            print(f">>> {text}")
+        elif role == "assistant":
+            print(f"{text}\n\n")
+
+def generate_text(conversation, prompt, role="user"):
     try:
-        conversation["messages"].append({"role": "user", "content": prompt})
+        conversation["messages"].append({"role": role, "content": prompt})
 
         response = openai.ChatCompletion.create(
             model=conversation["model"],
@@ -63,6 +74,8 @@ def main():
         conversation = load_conversation(args.conversation)
     else:
         conversation = init_conversation(args.model)
+
+    print_conversation(conversation)
 
     while True:
         # Get user input
