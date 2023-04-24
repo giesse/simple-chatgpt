@@ -29,6 +29,12 @@ def save_conversation(conversation):
     with open(file_path, "w") as f:
         f.write(yaml_string)
 
+def load_conversation(file):
+    with open(file, "r") as f:
+        conversation = yaml.load(f, Loader=yaml.FullLoader)
+
+    return conversation
+
 def generate_text(conversation, prompt):
     try:
         conversation["messages"].append({"role": "user", "content": prompt})
@@ -48,12 +54,15 @@ def generate_text(conversation, prompt):
 
 def main():
     # Command line argument parser
-    parser = argparse.ArgumentParser(description="GPT Model Selector")
+    parser = argparse.ArgumentParser(description="Simple ChatGPT")
+    parser.add_argument("-c", "--conversation", help="Conversation file (to resume a previous conversation)")
     parser.add_argument("-m", "--model", default="gpt-3.5-turbo", help="Model to use (default: gpt-3.5-turbo)")
     args = parser.parse_args()
 
-    # Initialize an empty conversation
-    conversation = init_conversation(args.model)
+    if args.conversation:
+        conversation = load_conversation(args.conversation)
+    else:
+        conversation = init_conversation(args.model)
 
     while True:
         # Get user input
@@ -66,7 +75,7 @@ def main():
 
         # Generate text
         generated_output = generate_text(conversation, prompt)
-        print(generated_output)
+        print(f"{generated_output}\n\n")
 
 if __name__ == "__main__":
     main()
