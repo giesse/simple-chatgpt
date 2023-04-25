@@ -16,20 +16,24 @@ class Conversation:
         self.messages = [{"role": "system", "content": config["openai"]["system_message"]}]
         
         if self.file:
-            self.load()
+            try:
+                self.load()
+            except Exception as e:
+                print(f"Error loading conversation: {e}")
 
     def save(self):
-        # Set the file name based on the title, if not already set
-        if not self.file:
-            self.title = input("Title: ")
-            self.file = self.title.replace(" ", "-") + ".yaml"
+        try:
+            if not self.file:
+                self.title = input("Title: ")
+                self.file = self.title.replace(" ", "-") + ".yaml"
 
-        # Save the conversation data to a YAML file in the "conversations" directory
-        file_path = os.path.join("conversations", self.file)
-        print(f"Saving conversation to {file_path}...")
-        yaml_string = yaml.dump(self.__dict__)
-        with open(file_path, "w") as f:
-            f.write(yaml_string)
+            file_path = os.path.join("conversations", self.file)
+            print(f"Saving conversation to {file_path}...")
+            yaml_string = yaml.dump(self.__dict__)
+            with open(file_path, "w") as f:
+                f.write(yaml_string)
+        except Exception as e:
+            print(f"Error saving conversation: {e}")
 
     def load(self):
         # Load conversation data from the provided YAML file
@@ -75,16 +79,23 @@ class Conversation:
             return None
 
 def get_input(multiline):
-    if multiline:
-        result = input(">>> [end with .]\n")
-        while True:
-            line = input()
-            if line == ".":
-                break
-            result += "\n" + line
-        return result
-    else:
-        return input(">>> ")
+    try:
+        if multiline:
+            result = input(">>> [end with .]\n")
+            while True:
+                line = input()
+                if line == ".":
+                    break
+                result += "\n" + line
+            return result
+        else:
+            return input(">>> ")
+    except KeyboardInterrupt:
+        # Allow user to exit gracefully with Ctrl+C
+        return "quit"
+    except Exception as e:
+        print(f"Error getting input: {e}")
+        return ""
 
 def main():
     parser = argparse.ArgumentParser(description="Simple ChatGPT")
