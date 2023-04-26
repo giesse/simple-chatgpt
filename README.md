@@ -28,7 +28,6 @@ Here's an example `config.toml` file:
 [openai]
 api_key = "YOUR_API_KEY_HERE"
 system_message = "You are a helpful assistant."
-multiline = true
 ```
 
 ## Usage
@@ -47,7 +46,7 @@ You can also resume a previous conversation, by specifying the conversation file
 python chatgpt.py --conversation conversations/my-conversation.yaml
 ```
 
-The conversation will be saved to a YAML file in the `conversations` directory. To save the conversation and exit, type `quit` at the prompt.
+The conversation will be saved to a YAML file in the `conversations` directory. To save the conversation and exit, type `/quit` at the prompt.
 
 ## License
 

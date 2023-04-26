@@ -85,21 +85,21 @@ class Conversation:
             print(f"Error generating text: {e}")
             return None
 
-def get_input(multiline):
+def get_input():
     try:
-        if multiline:
-            result = input(">>> [end with .]\n")
+        text = input(">>> ")
+        if text.lower().startswith("/multiline"):
+            text = input("[end with .]\n")
             while True:
                 line = input()
                 if line == ".":
                     break
-                result += "\n" + line
-            return result
-        else:
-            return input(">>> ")
+                text += "\n" + line
+            print("[end]")
+        return text
     except KeyboardInterrupt:
         # Allow user to exit gracefully with Ctrl+C
-        return "quit"
+        return "/quit"
     except Exception as e:
         print(f"Error getting input: {e}")
         return ""
@@ -120,11 +120,11 @@ def main():
     conversation.print()
 
     while True:
-        # Get user input based on the "multiline" setting in the config file
-        prompt = get_input(config["openai"]["multiline"])
+        # Get user input (handles /multiline command)
+        prompt = get_input()
 
         # Exit the loop and save the conversation if the user enters 'quit'
-        if prompt.lower() == "quit":
+        if prompt.lower() == "/quit":
             conversation.save()
             break
 
