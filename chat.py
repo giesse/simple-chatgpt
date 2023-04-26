@@ -9,12 +9,9 @@ def get_input() -> str:
     try:
         text = input(">>> ")
         if text.lower().startswith("/multiline"):
-            text = input("[end with .]\n")
-            while True:
-                line = input()
-                if line == ".":
-                    break
-                text += "\n" + line
+            print("[end with .]")
+            lines = iter(input, ".")
+            text = "\n".join(list(lines))
             print("[end]")
         return text
     except KeyboardInterrupt:
