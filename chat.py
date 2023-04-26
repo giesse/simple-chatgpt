@@ -1,4 +1,11 @@
-def get_input():
+from conversation import Conversation
+
+def get_input() -> str:
+    """Gets user input from the console, handling the /multiline command.
+    
+    Returns:
+        str: The user input as text.
+    """
     try:
         text = input(">>> ")
         if text.lower().startswith("/multiline"):
@@ -20,14 +27,40 @@ def get_input():
 commands = {}
 
 class Command:
+    """A class representing a usable command.
+    
+    Attributes:
+        call (callable): The function that the command executes.
+        help_text (str): The description of what the command does.
+    """
     def __init__(self, func, help_text):
         self.call = func
         self.help_text = help_text
 
-def define_command(name, func, help_text):
+def define_command(name: str, func: callable, help_text: str) -> None:
+    """Defines a new command to be used in the console.
+    
+    Args:
+        name (str): The name of the command (with the '/' prefix).
+        func (callable): The function that the command executes.
+        help_text (str): The description of what the command does.
+    
+    Returns:
+        None
+    """
     commands[name] = Command(func, help_text)
 
-def print_help(cmd=None):
+def print_help(cmd: str = None) -> str:
+    """Generates help text for the console, listing all available commands or giving
+    help text for a specific command if supplied.
+    
+    Args:
+        cmd (Optional[str]): The name of the command to show help text for, with or without
+        the '/' prefix. Default is None, which shows help text for all commands.
+    
+    Returns:
+        str: The help text for the specified command(s).
+    """
     help_text = None
     if cmd:
         if not cmd.startswith("/"):
@@ -42,7 +75,16 @@ def print_help(cmd=None):
 
 define_command("/help", print_help, "Prints the text you are currently looking at")
 
-def run(conversation):
+def run(conversation: Conversation) -> None:
+    """Runs the console loop to receive input from the user and generate responses using
+    OpenAI's API. Handles defined commands and saves the conversation to a file on /quit.
+    
+    Args:
+        conversation (Conversation): The Conversation object to use for generating responses.
+    
+    Returns:
+        None
+    """
     while True:
         # Get user input (handles /multiline command)
         prompt = get_input()
