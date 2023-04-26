@@ -28,6 +28,13 @@ class Conversation:
                 self.file = self.title.replace(" ", "-") + ".yaml"
 
             file_path = os.path.join("conversations", self.file)
+            if os.path.exists(file_path):
+                overwrite = input("File already exists. Do you want to overwrite it? (y/n): ")
+                if overwrite.lower() != "y":
+                    new_filename = input("Please enter a new file name: ")
+                    self.file = new_filename + ".yaml"
+                    file_path = os.path.join("conversations", self.file)
+
             print(f"Saving conversation to {file_path}...")
             yaml_string = yaml.dump(self.__dict__)
             with open(file_path, "w") as f:
