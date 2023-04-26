@@ -74,6 +74,9 @@ class Conversation:
             generated_text = response.choices[0].message["content"].strip()
             # Add the generated text to the conversation messages
             self.messages.append({"role": "assistant", "content": generated_text})
+            finish_reason = response.choices[0].finish_reason
+            if finish_reason != "stop":
+                generated_text += "\nWarning: finish_reason = " + finish_reason
             # Update the total tokens used in the conversation
             self.total_tokens += response.usage.total_tokens
 
