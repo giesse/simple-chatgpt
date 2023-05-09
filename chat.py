@@ -64,13 +64,14 @@ def print_help(cmd: str = None) -> str:
             cmd = "/" + cmd
         if cmd in commands:
             help_text = commands[cmd].help_text
-    if not help_text:
-        help_text = "Available commands:\n/multiline - starts multiline input\n/quit - save the conversation and exit"
+    if help_text:
+        yield help_text
+    else:
+        yield "Available commands:\n/multiline - starts multiline input\n/quit - save the conversation and exit"
         for cmd in commands:
-            help_text += "\n" + cmd + " - " + commands[cmd].help_text
-    return help_text
+            yield f"\n{cmd} {commands[cmd].help_text}"
 
-define_command("/help", print_help, "Prints the text you are currently looking at")
+define_command("/help", print_help, "- Prints the text you are currently looking at")
 
 def run(conversation: Conversation) -> None:
     """Runs the console loop to receive input from the user and generate responses using
@@ -95,12 +96,14 @@ def run(conversation: Conversation) -> None:
             cmd = tokens[0]
             args = tokens[1:]
             if cmd in commands:
-                generated_output = commands[cmd].call(*args)
+                output_stream = commands[cmd].call(*args)
             else:
-                generated_output = f"Unknown command {cmd}"
+                output_stream = [f"Unknown command {cmd}"]
         else:
             # Generate text using OpenAI's API
-            generated_output = conversation.generate_text(prompt)
+            output_stream = conversation.generate_text(prompt)
 
         # Display the generated text
-        print(f"Assistant: {generated_output}\n")
+        for string in output_stream:
+            print(string, end="")
+        print("\n") # this is two newlines

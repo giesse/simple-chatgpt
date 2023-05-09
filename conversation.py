@@ -100,23 +100,33 @@ class Conversation:
             # Add the user prompt to the conversation messages
             self.messages.append({"role": role, "content": prompt})
 
+            yield "Assistant: "
+
             # Make an API call to OpenAI's chat model
             response = openai.ChatCompletion.create(
                 model=self.model,
-                messages=self.messages
+                messages=self.messages,
+                stream=True
             )
 
-            # Extract the generated text from the API response
-            generated_text = response.choices[0].message["content"].strip()
-            # Add the generated text to the conversation messages
-            self.messages.append({"role": "assistant", "content": generated_text})
-            finish_reason = response.choices[0].finish_reason
-            if finish_reason != "stop":
-                generated_text += "\nWarning: finish_reason = " + finish_reason
-            # Update the total tokens used in the conversation
-            self.total_tokens += response.usage.total_tokens
+            message = {"content": ""}
+            finish_reason = None
+            for chunk in response:
+                choice = chunk.choices[0]
+                finish_reason = choice.finish_reason
+                if "role" in choice.delta:
+                    message["role"] = choice.delta["role"]
+                if "content" in choice.delta:
+                    content = choice.delta["content"]
+                    if not (content == "\n\n" and message["content"] == ""):
+                        message["content"] += content
+                        yield content
 
-            return generated_text
+            # Add the generated text to the conversation messages
+            self.messages.append(message)
+            if finish_reason != "stop":
+                yield f"\nWarning: finish_reason = {finish_reason}\n"
+            # Update the total tokens used in the conversation
+            #self.total_tokens += response.usage.total_tokens
         except Exception as e:
-            print(f"Error generating text: {e}")
-            return None
+            yield f"\nError generating text: {e}\n"
