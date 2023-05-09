@@ -1,6 +1,7 @@
 from conversation import Conversation
 import sys
 from googlesearch import search
+import requests
 
 def get_input() -> str:
     """Gets user input from the console, handling the /multiline command.
@@ -83,7 +84,9 @@ def print_help(cmd: str = None):
     if help_text:
         yield help_text
     else:
-        yield "Available commands:\n/multiline - starts multiline input\n/quit - save the conversation and exit"
+        yield ("Available commands:\n"
+            "/multiline - starts multiline input\n"
+            "/quit - save the conversation and exit")
         for cmd in user_commands:
             yield f"\n{cmd} {user_commands[cmd].help_text}"
 
@@ -94,14 +97,34 @@ def google_search(query: str) -> str:
         text += f"{result.title}\n{result.description}\n{result.url}\n\n"
     return text
 
+def read_url(url: str) -> str:
+    response = requests.get(url)
+    return f"{response.status_code} {response.reason}\n\n{response.text}\n"
+
 def ai_help():
-    help_text = "You can use the following commands to execute actions. A command is only accepted if your response starts with '/'. You cannot execute commands in the middle of other text. You can only execute one command at a time.\n"
+    help_text = ("As a programming and research assistant, you have access to specialized "
+            "commands to execute actions. To ensure proper functioning, please adhere to the "
+            "following guidelines:\n\n"
+            "1. Commands should be placed at the beginning of your response, "
+            "starting with a '/' (slash) symbol.\n"
+            "2. Do not include commands within or at the end of text meant for user visibility. "
+            "They will not be executed in such cases.\n"
+            "3. Execute only one command at a time.\n"
+            "4. The user will not see any messages containing commands or their outputs. "
+            "Only you will be able to view the results of a command.\n"
+            "5. Refrain from instructing the user to execute a command, as it creats confusion.\n"
+            "6. Do not mention a command in a response starting with phrases such as \"Sure, let me...\". "
+            "Type the command directly to initiate the action.\n\n"
+            "Available commands include:")
     for cmd in ai_commands:
-        help_text += f"\n{cmd} {ai_commands[cmd].help_text}"
+        help_text += f"\n- {cmd} {ai_commands[cmd].help_text}"
+
+    help_text += "\n\nPlease follow these guidelines to ensure smooth interactions within the system."
     return help_text
 
 define_user_command("/help", print_help, "- Prints the text you are currently looking at")
-define_ai_command("/search", google_search, "query - Perform a Google search")
+define_ai_command("/search", google_search, "query: This initiates a Google search based on the given query.")
+define_ai_command("/get", read_url, "url: This fetches the raw content of a specified URL")
 
 def run(conversation: Conversation, debug) -> None:
     """Runs the console loop to receive input from the user and generate responses using
