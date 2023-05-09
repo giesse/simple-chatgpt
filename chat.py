@@ -1,4 +1,5 @@
 from conversation import Conversation
+import sys
 
 def get_input() -> str:
     """Gets user input from the console, handling the /multiline command.
@@ -106,4 +107,5 @@ def run(conversation: Conversation) -> None:
         # Display the generated text
         for string in output_stream:
             print(string, end="")
+            sys.stdout.flush()
         print("\n") # this is two newlines
