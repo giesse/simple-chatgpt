@@ -23,7 +23,7 @@ def main():
     print("Welcome to Simple ChatGPT!\nType /multiline to enter multiple lines of input. /quit to quit and save conversation.\nType /help for more commands.")
 
     # Print the conversation so far
-    conversation.print()
+    conversation.print(config["openai"]["debug"])
 
     chat.run(conversation)
 

@@ -7,12 +7,12 @@ def get_input() -> str:
         str: The user input as text.
     """
     try:
-        text = input(">>> ")
+        text = input("User: ")
         if text.lower().startswith("/multiline"):
             print("[end with .]")
             lines = iter(input, ".")
             text = "\n".join(list(lines))
-            print("[end]")
+        print("")
         return text
     except KeyboardInterrupt:
         # Allow user to exit gracefully with Ctrl+C
@@ -103,4 +103,4 @@ def run(conversation: Conversation) -> None:
             generated_output = conversation.generate_text(prompt)
 
         # Display the generated text
-        print(f"{generated_output}\n")
+        print(f"Assistant: {generated_output}\n")

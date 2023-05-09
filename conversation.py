@@ -66,21 +66,21 @@ class Conversation:
         # Update conversation attributes with the loaded data
         self.__dict__.update(data)
 
-    def print(self):
+    def print(self, debug):
         """
         Print the conversation messages in a readable format.
-        System messages are enclosed in square brackets, user messages are preceded by ">>>", and assistant messages are printed as-is.
+        If debug is true, also print system messages.
         """
         print(f"Model: {self.model}\n")
         for message in self.messages:
             text = message["content"]
             role = message["role"]
-            if role == "system":
-                print(f"[{text}]")
+            if role == "system" and debug:
+                print(f"System: {text}\n")
             elif role == "user":
-                print(f">>> {text}")
+                print(f"User: {text}\n")
             elif role == "assistant":
-                print(f"{text}\n")
+                print(f"Assistant: {text}\n")
 
     def generate_text(self, prompt, role="user"):
         """
