@@ -4,14 +4,15 @@ import argparse
 from conversation import Conversation
 import chat
 
-config = toml.load("config.toml")
-openai.api_key = config["openai"]["api_key"]
-
 def main():
     parser = argparse.ArgumentParser(description="Simple ChatGPT")
     parser.add_argument("-c", "--conversation", help="Conversation file (to resume a previous conversation)")
     parser.add_argument("-m", "--model", default="gpt-3.5-turbo", help="Model to use (default: gpt-3.5-turbo)")
+    parser.add_argument("-C", "--config", default="config.toml", help="Configuration file name")
     args = parser.parse_args()
+
+    config = toml.load(args.config)
+    openai.api_key = config["openai"]["api_key"]
 
     # Initialize a Conversation object, either by loading an existing conversation from a file or creating a new one
     if args.conversation:
