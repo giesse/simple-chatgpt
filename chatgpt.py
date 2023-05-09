@@ -18,14 +18,17 @@ def main():
     if args.conversation:
         conversation = Conversation(file=args.conversation)
     else:
-        conversation = Conversation(model=args.model, system_message=config["openai"]["system_message"])
+        system_message = config["openai"]["system_message"] + "\n\n" + chat.ai_help()
+        conversation = Conversation(model=args.model, system_message=system_message)
 
     print("Welcome to Simple ChatGPT!\nType /multiline to enter multiple lines of input. /quit to quit and save conversation.\nType /help for more commands.")
 
-    # Print the conversation so far
-    conversation.print(config["openai"]["debug"])
+    debug = config["openai"]["debug"]
 
-    chat.run(conversation)
+    # Print the conversation so far
+    conversation.print(debug)
+
+    chat.run(conversation, debug)
 
 if __name__ == "__main__":
     main()

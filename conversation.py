@@ -130,3 +130,6 @@ class Conversation:
             #self.total_tokens += response.usage.total_tokens
         except Exception as e:
             yield f"\nError generating text: {e}\n"
+
+    def get_last(self):
+        return self.messages[-1]["content"]
